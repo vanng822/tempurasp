@@ -1,10 +1,11 @@
 from python:3-alpine
 
 RUN apk add --no-cache curl
+WORKDIR /app
+ADD ./app/requirements.txt .
+RUN pip install -r requirements.txt
 
 ADD app /app
-WORKDIR /app
-RUN pip install -r requirements.txt
 
 CMD ["python", "tempurasp.py"]
 
