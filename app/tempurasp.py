@@ -14,10 +14,11 @@ async def temper_handler(request):
             with open(RASP_CPU_TEMPER, "r") as fd:
                 temper = fd.read()
             if temper:
-                temper = round(tempur/1000.0)
+                temper = round(float(temper)/1000.0, 2)
             data = 'Time: {}, Temperature: {}'.format(
                 datetime.now(),
                 temper)
+            print(data)
             await resp.send(data)
             await asyncio.sleep(3, loop=loop)
     return resp
