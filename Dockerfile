@@ -1,7 +1,12 @@
-from ubuntu
-RUN apt-get update
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:ubuntu-raspi2/ppa
-RUN apt-get update
-RUN apt-get install -y libraspberrypi-bin
+from python:3-alpine
 
+RUN apk add --no-cache curl
+
+ADD app /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+
+CMD ["python", "tempurasp.py"]
+
+HEALTHCHECK --interval=15s --timeout=2s --retries=12 \
+  CMD curl --fail localhost:8080 || exit 1
