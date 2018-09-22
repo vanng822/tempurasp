@@ -6,7 +6,7 @@ from datetime import datetime
 
 RASP_CPU_TEMPER = "/cpu_temp"
 
-async def temper(request):
+async def temper_handler(request):
     loop = request.app.loop
     async with sse_response(request) as resp:
         while True:
@@ -42,6 +42,6 @@ async def index(request):
 
 
 app = web.Application()
-app.router.add_route('GET', '/temper', temper)
+app.router.add_route('GET', '/temper', temper_handler)
 app.router.add_route('GET', '/', index)
 web.run_app(app, host='0.0.0.0', port=8080)
