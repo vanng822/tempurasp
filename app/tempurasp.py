@@ -6,19 +6,31 @@ from datetime import datetime
 import json
 
 RASP_CPU_TEMPER = "/cpu_temp"
+RASP_GPU_TEMPER = "/gpu_temp"
 
 async def temper_handler(request):
     loop = request.app.loop
     async with sse_response(request) as resp:
         while True:
-            temper = ''
+            cpu_temper = ''
+            gpu_temper = ''
+
             with open(RASP_CPU_TEMPER, "r") as fd:
-                temper = fd.read()
-            if temper:
-                temper = round(float(temper)/1000.0, 2)
+                cpu_temper = fd.read()
+
+            if cpu_temper:
+                cpu_temper = round(float(cpu_temper)/1000.0, 2)
+
+            with open(RASP_GPU_TEMPER, "r") as fd:
+                gpu_temper = fd.read()
+
+            if gpu_temper:
+                gpu_temper = float(gpu_temper)
+
             data = json.dumps({
                 "time": datetime.now().isoformat(),
-                "temperature": temper,
+                "cpu_temperature": cpu_temper,
+                "gpu_temperature": gpu_temper,
             })
             print(data)
             await resp.send(data)
@@ -35,13 +47,15 @@ async def index(request):
                 evtSource.onmessage = function(e) {
                     var data = JSON.parse(e.data);
                     document.getElementById('time').innerText = data.time;
-                    document.getElementById('temperature').innerText = data.temperature;
+                    document.getElementById('cpu_temperature').innerText = data.cpu_temperature;
+                    document.getElementById('gpu_temperature').innerText = data.gpu_temperature;
                 }
             </script>
             <h1>Raspberry pi temperature:</h1>
             <div>
                 <div><span>Time: </span><span id="time"></span></div>
-                <div><span>Temperature: </span><span id="temperature"></span></div>
+                <div><span>CPU Temperature: </span><span id="cpu_temperature"></span></div>
+                <div><span>GPU Temperature: </span><span id="gpu_temperature"></span></div>
             </div>
         </body>
     </html>

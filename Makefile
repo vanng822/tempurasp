@@ -17,6 +17,7 @@ build:
 run:
 	$(DOCKER) run --restart=always --network raspberrypi3_default \
 		-v $(CPU_TEMP):/cpu_temp \
+		-v /tmp/gpu_temp:/gpu_temp \
 	 	--ip 172.18.0.6 --name $(name) -d -it $(image_tag)
 
 stop:
