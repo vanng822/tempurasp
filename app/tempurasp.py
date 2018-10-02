@@ -8,25 +8,24 @@ import json
 RASP_CPU_TEMPER = "/cpu_temp"
 RASP_GPU_TEMPER = "/gpu_temp"
 
+async def read_temperature(filename, scale=1.0):
+    temper = ''
+    with open(filename, "r") as fd:
+        temper = fd.read()
+    if temper:
+        temper = round(float(temper)/scale, 2)
+    return temper
+
 async def temper_handler(request):
     loop = request.app.loop
     async with sse_response(request) as resp:
         while True:
-            cpu_temper = ''
-            gpu_temper = ''
-
-            with open(RASP_CPU_TEMPER, "r") as fd:
-                cpu_temper = fd.read()
-
-            if cpu_temper:
-                cpu_temper = round(float(cpu_temper)/1000.0, 2)
-
-            with open(RASP_GPU_TEMPER, "r") as fd:
-                gpu_temper = fd.read()
-
-            if gpu_temper:
-                gpu_temper = float(gpu_temper)
-
+            result = await asyncio.gather(
+                read_temperature(RASP_CPU_TEMPER, scale=1000.0),
+                read_temperature(RASP_GPU_TEMPER, scale=1.0)
+            )
+            cpu_temper = result[0]
+            gpu_temper = result[1]
             data = json.dumps({
                 "time": datetime.now().isoformat(),
                 "cpu_temperature": cpu_temper,

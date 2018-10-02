@@ -1,4 +1,4 @@
-from python:3-alpine
+from python:3.7.0-alpine
 
 RUN apk add --no-cache curl
 WORKDIR /app

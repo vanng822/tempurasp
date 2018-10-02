@@ -32,3 +32,7 @@ deploy:
 	make stop
 	make rm
 	make run
+
+tail: CONTAINER_ID=$(shell $(DOCKER) ps -f name=tempurasp -q)
+tail:
+	$(DOCKER) logs -f $(CONTAINER_ID)
