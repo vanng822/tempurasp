@@ -1,2 +1,2 @@
-aiohttp==3.10.2
+aiohttp==3.13.3
 aiohttp-sse==2.0.0
